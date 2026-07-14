@@ -8,7 +8,6 @@ import com.artillexstudios.axapi.libs.boostedyaml.settings.dumper.DumperSettings
 import com.artillexstudios.axapi.libs.boostedyaml.settings.general.GeneralSettings;
 import com.artillexstudios.axapi.libs.boostedyaml.settings.loader.LoaderSettings;
 import com.artillexstudios.axapi.libs.boostedyaml.settings.updater.UpdaterSettings;
-import com.artillexstudios.axapi.metrics.AxMetrics;
 import com.artillexstudios.axapi.utils.MessageUtils;
 import com.artillexstudios.axapi.utils.StringUtils;
 import com.artillexstudios.axapi.utils.featureflags.FeatureFlags;
@@ -35,7 +34,6 @@ public final class AxTrade extends AxPlugin {
     public static MessageUtils MESSAGEUTILS;
     private static AxPlugin instance;
     private static ThreadedQueue<Runnable> threadedQueue;
-    private static AxMetrics metrics;
 
     public static ThreadedQueue<Runnable> getThreadedQueue() {
         return threadedQueue;
@@ -75,15 +73,11 @@ public final class AxTrade extends AxPlugin {
 
         Bukkit.getConsoleSender().sendMessage(StringUtils.formatToString("&#00FFDD[AxTrade] Loaded plugin!"));
 
-        metrics = new AxMetrics(this, 8);
-        metrics.start();
-
         UpdateNotifier.init(CONFIG, LANG);
         if (CONFIG.getBoolean("update-notifier.enabled", true)) new UpdateNotifier();
     }
 
     public void disable() {
-        if (metrics != null) metrics.cancel();
         SafetyManager.stop();
     }
 
@@ -91,6 +85,6 @@ public final class AxTrade extends AxPlugin {
         FeatureFlags.USE_LEGACY_HEX_FORMATTER.set(true);
         FeatureFlags.PLACEHOLDER_API_HOOK.set(true);
         FeatureFlags.PLACEHOLDER_API_IDENTIFIER.set("axtrade");
-        FeatureFlags.ENABLE_PACKET_LISTENERS.set(true);
+        //FeatureFlags.ENABLE_PACKET_LISTENERS.set(true); -- Why on earth was this even enabled? For what reason would you want to enable packet listeners for a plugin that doesn't even use them?
     }
 }
