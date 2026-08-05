@@ -27,7 +27,7 @@ public class TradeTicker {
                 trade.player2.tick();
             }
 
-            final Iterator<Request> iterator = Requests.getRequests().iterator();
+            Iterator<Request> iterator = Requests.getRequests().iterator();
             while (iterator.hasNext()) {
                 Request request = iterator.next();
                 if (System.currentTimeMillis() - request.getTime() <= CONFIG.getInt("trade-request-expire-seconds", 60) * 1_000L) continue;

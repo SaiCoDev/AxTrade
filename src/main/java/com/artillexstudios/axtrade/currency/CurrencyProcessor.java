@@ -27,7 +27,7 @@ public class CurrencyProcessor {
             i++;
         }
 
-        // run all futures
+        // wait for all futures
         CompletableFuture<Boolean> success = CompletableFuture.allOf(futures).thenApply(unused -> {
             boolean[] actions = new boolean[futures.length];
             boolean anyErrors = false;

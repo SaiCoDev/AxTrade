@@ -11,6 +11,7 @@ import com.artillexstudios.axapi.libs.boostedyaml.settings.updater.UpdaterSettin
 import com.artillexstudios.axapi.utils.MessageUtils;
 import com.artillexstudios.axapi.utils.StringUtils;
 import com.artillexstudios.axapi.utils.featureflags.FeatureFlags;
+import com.artillexstudios.axapi.utils.file.FileUtils;
 import com.artillexstudios.axtrade.commands.CommandManager;
 import com.artillexstudios.axtrade.hooks.HookManager;
 import com.artillexstudios.axtrade.lang.LanguageManager;
@@ -43,6 +44,20 @@ public final class AxTrade extends AxPlugin {
         return instance;
     }
 
+    @Override
+    public void load() {
+        // remove legacy libs
+        File libs = new File(getDataFolder(), "libs");
+        if (libs.exists()) {
+            FileUtils.deleteNested(libs.toPath());
+        }
+        File lib = new File(getDataFolder(), "lib");
+        if (lib.exists()) {
+            FileUtils.deleteNested(lib.toPath());
+        }
+    }
+
+    @Override
     public void enable() {
         instance = this;
 
@@ -77,10 +92,12 @@ public final class AxTrade extends AxPlugin {
         if (CONFIG.getBoolean("update-notifier.enabled", true)) new UpdateNotifier();
     }
 
+    @Override
     public void disable() {
         SafetyManager.stop();
     }
 
+    @Override
     public void updateFlags() {
         FeatureFlags.USE_LEGACY_HEX_FORMATTER.set(true);
         FeatureFlags.PLACEHOLDER_API_HOOK.set(true);

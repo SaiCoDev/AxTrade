@@ -1,17 +1,19 @@
 package com.artillexstudios.axtrade.trade;
 
+import com.artillexstudios.axapi.utils.PaperUtils;
 import com.artillexstudios.axtrade.utils.SoundUtils;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
 import static com.artillexstudios.axtrade.AxTrade.MESSAGEUTILS;
 
 public class Trades {
-    private static final List<Trade> trades = new ArrayList<>();
+    private static final List<Trade> trades = PaperUtils.isFolia() ? Collections.synchronizedList(new ArrayList<>()) : new ArrayList<>();
 
     public static void addTrade(Player p1, Player p2) {
         Trade trade = new Trade(p1, p2);
@@ -36,9 +38,11 @@ public class Trades {
 
     @Nullable
     public static Trade getTrade(Player player) {
-        for (Trade trade : trades) {
-            if (trade.player1.getPlayer().equals(player) || trade.player2.getPlayer().equals(player)) {
-                return trade;
+        synchronized (trades) {
+            for (Trade trade : trades) {
+                if (trade.player1.getPlayer().equals(player) || trade.player2.getPlayer().equals(player)) {
+                    return trade;
+                }
             }
         }
         return null;

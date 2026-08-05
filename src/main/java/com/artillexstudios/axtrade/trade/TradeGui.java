@@ -72,8 +72,11 @@ public class TradeGui extends GuiFrame {
         if (trade.isEnded()) return;
 
         update();
-        gui.open(player.getPlayer());
-        updateTitle();
+        Runnable runnable = () -> {
+            gui.open(player.getPlayer());
+            updateTitle();
+        };
+        Scheduler.get().execute(player.getPlayer(), runnable, runnable, 0);
         opened = true;
     }
 
@@ -271,10 +274,10 @@ public class TradeGui extends GuiFrame {
         trade.prepTime = System.currentTimeMillis();
         event.getWhoClicked().closeInventory();
 
-        var lines = StringUtils.formatList(LANG.getStringList("currency-editor-sign"));
+        List<Component> lines = StringUtils.formatList(LANG.getStringList("currency-editor-sign"));
         lines.set(0, Component.empty());
 
-        var sign = new SignInput.Builder().setLines(lines).setHandler((player1, result) -> {
+        SignInput sign = new SignInput.Builder().setLines(lines).setHandler((player1, result) -> {
             if (trade.isEnded()) return;
             trade.prepTime = System.currentTimeMillis();
             String am = result[0];
@@ -283,15 +286,16 @@ public class TradeGui extends GuiFrame {
                 MESSAGEUTILS.sendLang(player1, "currency-editor.success");
             } else {
                 switch (addResult) {
-                    case NOT_ENOUGH_CURRENCY:
+                    case NOT_ENOUGH_CURRENCY -> {
                         MESSAGEUTILS.sendLang(player1, "currency-editor.not-enough");
-                        break;
-                    default:
+                    }
+                    default -> {
                         MESSAGEUTILS.sendLang(player1, "currency-editor.failed");
-                        break;
+                    }
                 }
             }
-            Scheduler.get().run(scheduledTask -> {
+
+            Runnable runnable = () -> {
                 if (trade.isEnded()) return;
                 gui.open(player.getPlayer());
                 inSign = false;
@@ -299,13 +303,20 @@ public class TradeGui extends GuiFrame {
                 currentTitle = "";
                 player.cancel();
                 updateTitle();
-            });
+            };
+            Scheduler.get().run(player.getPlayer(), task -> {
+                runnable.run();
+            }, runnable);
         }).build(player.getPlayer());
         sign.open();
     }
 
     public void handleShulkerClick(InventoryClickEvent event) {
         event.setCancelled(true);
+        if (!SafetyManager.SHULKER_VIEWER.get()) {
+            MESSAGEUTILS.sendLang(player.getPlayer(), "safety");
+            return;
+        }
         player.cancel();
         trade.update();
         inSign = true;
@@ -368,11 +379,15 @@ public class TradeGui extends GuiFrame {
         if (currentTitle.equals(newTitle)) return;
         this.currentTitle = newTitle;
 
-        Scheduler.get().runLater(task -> {
+        Runnable runnable = () -> {
             Inventory topInv = player.getPlayer().getOpenInventory().getTopInventory();
             if (topInv.equals(gui.getInventory())) {
                 NMSHandlers.getNmsHandler().setTitle(player.getPlayer().getOpenInventory().getTopInventory(), StringUtils.format(newTitle));
             }
-        }, 1);
+        };
+
+        Scheduler.get().runLater(player.getPlayer(), task -> {
+            runnable.run();
+        }, runnable, 1);
     }
 }

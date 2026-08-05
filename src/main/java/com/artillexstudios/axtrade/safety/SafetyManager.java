@@ -19,7 +19,8 @@ import static com.artillexstudios.axtrade.AxTrade.CONFIG;
 
 public enum SafetyManager {
     TRADING,
-    CURRENCY_SELECTOR;
+    CURRENCY_SELECTOR,
+    SHULKER_VIEWER;
 
     private static final JavaPlugin instance = AxTrade.getInstance();
     private static final Gson gson = new GsonBuilder().create();

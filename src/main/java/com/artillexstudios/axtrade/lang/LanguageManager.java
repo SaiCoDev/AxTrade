@@ -29,13 +29,13 @@ public class LanguageManager {
 
     public static void reload() {
         final String lang = CONFIG.getString("language", "en_US").toLowerCase();
-        final File file = new File(AxTrade.getInstance().getDataFolder(), "lib/translations/" + lang + ".yml");
+        final File file = new File(AxTrade.getInstance().getDataFolder(), "assets/" + lang + ".yml");
         boolean exists = file.exists();
         translations = new Config(file);
         if (exists && !translations.getBackingDocument().isEmpty(true)) return;
 
         final List<String> versions = Version.getServerVersion().getVersions();
-        final String version = versions.get(versions.size() - 1);
+        final String version = versions.getLast();
         final String url = "https://api.github.com/repos/InventivetalentDev/minecraft-assets/contents/assets/minecraft/lang/" + lang + ".json?ref=" + version;
         Bukkit.getConsoleSender().sendMessage(StringUtils.formatToString("&#00FF00╠ &#AAFFAADownloading &f" + lang + " &#AAFFAAlanguage files.."));
 
