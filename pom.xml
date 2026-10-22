@@ -115,7 +115,7 @@
         <dependency>
             <groupId>com.artillexstudios.axapi</groupId>
             <artifactId>axapi</artifactId>
-            <version>26.2.DEV-ENCHANTED</version>
+            <version>26.2.0-ENCHANTED</version>
             <scope>compile</scope>
             <classifier>all</classifier>
         </dependency>
