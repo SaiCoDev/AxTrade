@@ -3,12 +3,14 @@ package com.artillexstudios.axtrade.commands;
 import com.artillexstudios.axtrade.commands.subcommands.Accept;
 import com.artillexstudios.axtrade.commands.subcommands.Deny;
 import com.artillexstudios.axtrade.commands.subcommands.Force;
+import com.artillexstudios.axtrade.commands.subcommands.History;
 import com.artillexstudios.axtrade.commands.subcommands.Preview;
 import com.artillexstudios.axtrade.commands.subcommands.Reload;
 import com.artillexstudios.axtrade.commands.subcommands.Request;
 import com.artillexstudios.axtrade.commands.subcommands.Toggle;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import revxrsal.commands.annotation.AutoComplete;
 import revxrsal.commands.annotation.DefaultFor;
 import revxrsal.commands.annotation.Optional;
 import revxrsal.commands.annotation.Subcommand;
@@ -49,6 +51,13 @@ public class Commands implements OrphanCommand {
     @CommandPermission(value = "axtrade.admin")
     public void force(Player sender, Player other) {
         Force.INSTANCE.execute(sender, other);
+    }
+
+    @Subcommand("history")
+    @CommandPermission(value = "axtrade.history")
+    @AutoComplete("@players *")
+    public void history(Player sender, String player, @Optional Integer index) {
+        History.INSTANCE.execute(sender, player, index);
     }
 
     @Subcommand("preview")

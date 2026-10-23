@@ -13,6 +13,7 @@ import com.artillexstudios.axapi.utils.StringUtils;
 import com.artillexstudios.axapi.utils.featureflags.FeatureFlags;
 import com.artillexstudios.axapi.utils.file.FileUtils;
 import com.artillexstudios.axtrade.commands.CommandManager;
+import com.artillexstudios.axtrade.history.TradeHistoryDatabase;
 import com.artillexstudios.axtrade.hooks.HookManager;
 import com.artillexstudios.axtrade.lang.LanguageManager;
 import com.artillexstudios.axtrade.listeners.EntityInteractListener;
@@ -30,6 +31,7 @@ public final class AxTrade extends AxPlugin {
     public static Config CONFIG;
     public static Config LANG;
     public static Config GUIS;
+    public static Config HISTORY_GUIS;
     public static Config HOOKS;
     public static Config TOGGLED;
     public static MessageUtils MESSAGEUTILS;
@@ -65,6 +67,7 @@ public final class AxTrade extends AxPlugin {
 
         CONFIG = new Config(new File(getDataFolder(), "config.yml"), getResource("config.yml"), GeneralSettings.builder().setUseDefaults(false).build(), LoaderSettings.builder().setAutoUpdate(true).build(), DumperSettings.DEFAULT, UpdaterSettings.builder().setKeepAll(true).setVersioning(new BasicVersioning("version")).build());
         GUIS = new Config(new File(getDataFolder(), "guis.yml"), getResource("guis.yml"), GeneralSettings.builder().setUseDefaults(false).build(), LoaderSettings.builder().setAutoUpdate(true).build(), DumperSettings.DEFAULT, UpdaterSettings.builder().setKeepAll(true).setVersioning(new BasicVersioning("version")).build());
+        HISTORY_GUIS = new Config(new File(getDataFolder(), "history-guis.yml"), getResource("history-guis.yml"), GeneralSettings.builder().setUseDefaults(false).build(), LoaderSettings.builder().setAutoUpdate(true).build(), DumperSettings.DEFAULT, UpdaterSettings.builder().setKeepAll(true).build());
         LANG = new Config(new File(getDataFolder(), "lang.yml"), getResource("lang.yml"), GeneralSettings.builder().setUseDefaults(false).build(), LoaderSettings.builder().setAutoUpdate(true).build(), DumperSettings.DEFAULT, UpdaterSettings.builder().setKeepAll(true).setVersioning(new BasicVersioning("version")).build());
         HOOKS = new Config(new File(getDataFolder(), "currencies.yml"), getResource("currencies.yml"), GeneralSettings.builder().setUseDefaults(false).build(), LoaderSettings.builder().setAutoUpdate(true).build(), DumperSettings.DEFAULT, UpdaterSettings.builder().setKeepAll(true).setVersioning(new BasicVersioning("version")).build());
         TOGGLED = new Config(new File(getDataFolder(), "toggled.yml"), getResource("toggled.yml"), GeneralSettings.builder().setUseDefaults(false).build(), LoaderSettings.DEFAULT, DumperSettings.DEFAULT, UpdaterSettings.DEFAULT);
@@ -81,6 +84,8 @@ public final class AxTrade extends AxPlugin {
         HookManager.setupHooks();
         NumberUtils.reload();
 
+        TradeHistoryDatabase.start();
+
         TradeTicker.start();
         SafetyManager.start();
 
@@ -95,6 +100,7 @@ public final class AxTrade extends AxPlugin {
     @Override
     public void disable() {
         SafetyManager.stop();
+        TradeHistoryDatabase.stop();
     }
 
     @Override

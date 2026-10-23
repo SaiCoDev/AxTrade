@@ -85,6 +85,26 @@ abort:
   interact: true
   command: true
 
+history:
+  enabled: true
+  max-per-player: 500
+  command-aliases:
+    - "tradehistory"
+  date-format: "dd.MM.yyyy HH:mm"
+  database:
+    address: "127.0.0.1"
+    port: 3306
+    database: "axtrade"
+    username: "root"
+    password: ""
+    table-prefix: "axtrade_"
+    pool:
+      maximum-pool-size: 5
+      minimum-idle: 2
+      maximum-lifetime: 1800000
+      keepalive-time: 0
+      connection-timeout: 5000
+
 # should be plugin notify you if there is a new update?
 update-notifier:
   # if enabled, it will display the message in the console
@@ -97,4 +117,4 @@ update-notifier:
 enable-safety: true
 
 # do not change this
-version: 9
+version: 10

@@ -30,6 +30,11 @@ public class CommandManager {
             handler.register(Orphans.path(aliases.toArray(String[]::new)).handler(new Commands()));
         }
 
+        List<String> historyAliases = CONFIG.getStringList("history.command-aliases");
+        if (!historyAliases.isEmpty()) {
+            handler.register(Orphans.path(historyAliases.toArray(String[]::new)).handler(new HistoryCommand()));
+        }
+
         handler.registerBrigadier();
     }
 }

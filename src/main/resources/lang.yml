@@ -17,6 +17,7 @@ admin-help:
   - " <#22FFDD>➤ <white>/axtrade reload <#DDDDDD>| <#77FFFF>Reload plugin"
   - " <#22FFDD>➤ <white>/axtrade force <player> <#DDDDDD>| <#77FFFF>Force start a trade"
   - " <#22FFDD>➤ <white>/axtrade preview <#DDDDDD>| <#77FFFF>Opens read only gui (meant for testing)"
+  - " <#22FFDD>➤ <white>/tradehistory <player> [index] <#DDDDDD>| <#77FFFF>View a player's trade history"
   - " "
 
 reload:
@@ -30,6 +31,12 @@ trade:
   blacklisted-item: "&#CCFFEEThis item is blacklisted!"
   inventory-full: "&#CCFFEEYou can't put any more items in the gui, because your trade partner has no more empty slots."
   preview-info: "&#CCFFEEYou are opening the preview gui, this is meant for testing your configuration, clicking buttons will cause errors and might not work."
+
+history:
+  disabled: "&#FF3333Trade history is disabled!"
+  no-history: "&#CCFFEE&#00FFDD%player% &#CCFFEEhas no trade history!"
+  invalid-index: "&#FF3333Invalid index! &#00FFDD%player% &#CCFFEEhas &#00FFDD%amount% &#CCFFEEtrades in their history."
+  failed: "&#FF3333Failed to load the trade history, look in the console for errors!"
 
 toggle:
   enabled: "&#CCFFEEYou have enabled trade requests!"
@@ -116,4 +123,4 @@ update-notifier: "&#AAFFCCThere is a new version of the plugin available! &#DDDD
 safety: "&#FF0000This feature has been disabled for safety reasons and updating the plugin is required, please contact the server administrators."
 
 # do not change this
-version: 9
+version: 10

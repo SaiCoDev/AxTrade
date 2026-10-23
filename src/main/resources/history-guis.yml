@@ -1,0 +1,91 @@
+currency-format: " &7• &f%amount% &#00ffdd%currency%"
+no-currency-format: " &7• &fNothing"
+
+list:
+  title: "&0Trade history: %player% &8(%page%/%pages%)"
+  rows: 6
+  trade-slots:
+    - 0-44
+  trade:
+    material: "PLAYER_HEAD"
+    name: "&#00ffdd&l#%index% &fᴡɪᴛʜ &#00ffdd%partner%"
+    lore:
+      - ""
+      - " &7- &fDate: &#00ffdd%date%"
+      - ""
+      - "&#00ffdd&lɢᴀᴠᴇ &7(&f%given-items% items&7)"
+      - "%given-currencies%"
+      - ""
+      - "&#00ffdd&lʀᴇᴄᴇɪᴠᴇᴅ &7(&f%received-items% items&7)"
+      - "%received-currencies%"
+      - ""
+      - "&#00ffdd&l> &#00ffddClick &8- &#00ffddView Details"
+  filler:
+    slot:
+      - 45-53
+    material: "BLACK_STAINED_GLASS_PANE"
+    name: " "
+  previous-page:
+    slot: 45
+    material: "ARROW"
+    name: "&#00ffdd&lᴘʀᴇᴠɪᴏᴜs ᴘᴀɢᴇ"
+  next-page:
+    slot: 53
+    material: "ARROW"
+    name: "&#00ffdd&lɴᴇxᴛ ᴘᴀɢᴇ"
+  close:
+    slot: 49
+    material: "BARRIER"
+    name: "&#ff3333&lᴄʟᴏsᴇ"
+
+detail:
+  title: "&0#%index% %player% - %partner%"
+  rows: 6
+  given-slots:
+    - 9-12
+    - 18-21
+    - 27-30
+    - 36-39
+    - 45-48
+  received-slots:
+    - 14-17
+    - 23-26
+    - 32-35
+    - 41-44
+    - 50-53
+  filler:
+    slot:
+      - 0-8
+      - 13
+      - 22
+      - 31
+      - 40
+    material: "BLACK_STAINED_GLASS_PANE"
+    name: " "
+  given:
+    slot: 1
+    material: "PLAYER_HEAD"
+    head: "player"
+    name: "&#00ffdd&l%player% &fɢᴀᴠᴇ"
+    lore:
+      - ""
+      - "%given-currencies%"
+  info:
+    slot: 4
+    material: "CLOCK"
+    name: "&#00ffdd&lᴛʀᴀᴅᴇ #%index%"
+    lore:
+      - ""
+      - " &7- &fDate: &#00ffdd%date%"
+  received:
+    slot: 7
+    material: "PLAYER_HEAD"
+    head: "partner"
+    name: "&#00ffdd&l%player% &fʀᴇᴄᴇɪᴠᴇᴅ"
+    lore:
+      - ""
+      - "%received-currencies%"
+  back:
+    slot: 49
+    material: "ARROW"
+    name: "&#00ffdd&lʙᴀᴄᴋ"

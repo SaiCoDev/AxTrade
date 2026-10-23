@@ -5,6 +5,9 @@ import com.artillexstudios.axapi.utils.PaperUtils;
 import com.artillexstudios.axtrade.api.events.AxTradeAbortEvent;
 import com.artillexstudios.axtrade.api.events.AxTradeCompleteEvent;
 import com.artillexstudios.axtrade.currency.CurrencyProcessor;
+import com.artillexstudios.axtrade.history.HistoryCurrency;
+import com.artillexstudios.axtrade.history.TradeHistoryDatabase;
+import com.artillexstudios.axtrade.history.TradeRecord;
 import com.artillexstudios.axtrade.hooks.currency.CurrencyHook;
 import com.artillexstudios.axtrade.utils.HistoryUtils;
 import com.artillexstudios.axtrade.utils.NumberUtils;
@@ -151,12 +154,14 @@ public class Trade {
                     SoundUtils.playSound(player2.getPlayer(), "completed");
 
                     List<String> player1Currencies = new ArrayList<>();
+                    List<HistoryCurrency> player1HistoryCurrencies = new ArrayList<>();
                     for (Map.Entry<CurrencyHook, Double> entry : player1.getCurrencies().entrySet()) {
                         double amountAfterTax = TaxUtils.getTotalAfterTax(entry.getValue(), entry.getKey());
 
                         entry.getKey().giveBalance(player2.getPlayer().getUniqueId(), amountAfterTax);
 
                         String currencyName = Utils.getFormattedCurrency(entry.getKey());
+                        player1HistoryCurrencies.add(new HistoryCurrency(currencyName, entry.getValue(), amountAfterTax));
                         String fullCurrencyAmount = NumberUtils.formatNumber(entry.getValue());
                         String taxedCurrencyAmount = NumberUtils.formatNumber(amountAfterTax);
 
@@ -173,12 +178,14 @@ public class Trade {
                     }
 
                     List<String> player2Currencies = new ArrayList<>();
+                    List<HistoryCurrency> player2HistoryCurrencies = new ArrayList<>();
                     for (Map.Entry<CurrencyHook, Double> entry : player2.getCurrencies().entrySet()) {
                         double amountAfterTax = TaxUtils.getTotalAfterTax(entry.getValue(), entry.getKey());
 
                         entry.getKey().giveBalance(player1.getPlayer().getUniqueId(), amountAfterTax);
 
                         String currencyName = Utils.getFormattedCurrency(entry.getKey());
+                        player2HistoryCurrencies.add(new HistoryCurrency(currencyName, entry.getValue(), amountAfterTax));
                         String fullCurrencyAmount = NumberUtils.formatNumber(entry.getValue());
                         String taxedCurrencyAmount = NumberUtils.formatNumber(amountAfterTax);
 
@@ -195,8 +202,10 @@ public class Trade {
                     }
 
                     List<String> player1Items = new ArrayList<>();
+                    List<ItemStack> player1HistoryItems = new ArrayList<>();
                     player1.getTradeGui().getItems(false).forEach(itemStack -> {
                         if (itemStack == null) return;
+                        player1HistoryItems.add(itemStack.clone());
                         String itemName = Utils.getFormattedItemName(itemStack);
                         int itemAm = itemStack.getAmount();
                         addOrDrop(player2.getPlayer().getInventory(), List.of(itemStack), player2.getPlayer().getLocation());
@@ -208,8 +217,10 @@ public class Trade {
                     });
 
                     List<String> player2Items = new ArrayList<>();
+                    List<ItemStack> player2HistoryItems = new ArrayList<>();
                     player2.getTradeGui().getItems(false).forEach(itemStack -> {
                         if (itemStack == null) return;
+                        player2HistoryItems.add(itemStack.clone());
                         String itemName = Utils.getFormattedItemName(itemStack);
                         int itemAm = itemStack.getAmount();
                         addOrDrop(player1.getPlayer().getInventory(), List.of(itemStack), player1.getPlayer().getLocation());
@@ -230,6 +241,21 @@ public class Trade {
                                     player2Items.isEmpty() ? "---" : String.join(", ", player2Items)
                             )
                     );
+
+                    TradeHistoryDatabase.save(new TradeRecord(
+                            0,
+                            System.currentTimeMillis(),
+                            player1.getPlayer().getUniqueId(),
+                            player1.getPlayer().getName(),
+                            player2.getPlayer().getUniqueId(),
+                            player2.getPlayer().getName(),
+                            player1HistoryItems.size(),
+                            player2HistoryItems.size(),
+                            player1HistoryCurrencies,
+                            player2HistoryCurrencies,
+                            player1HistoryItems,
+                            player2HistoryItems
+                    ));
 
                     Scheduler.get().runLater(task -> {
                         Trades.removeTrade(this);
