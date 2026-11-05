@@ -9,6 +9,7 @@ import com.artillexstudios.axapi.utils.StringUtils;
 import com.artillexstudios.axtrade.hooks.HookManager;
 import com.artillexstudios.axtrade.hooks.currency.CurrencyHook;
 import com.artillexstudios.axtrade.utils.BlacklistUtils;
+import com.artillexstudios.axtrade.utils.HistoryUtils;
 import com.artillexstudios.axtrade.utils.NumberUtils;
 import com.artillexstudios.axtrade.utils.ShulkerUtils;
 import com.artillexstudios.axtrade.utils.TaxUtils;
@@ -167,11 +168,7 @@ public class TradeGui extends GuiFrame {
         }
         ItemStack it = getItem(event);
 
-        if (BlacklistUtils.isBlacklisted(it)) {
-            event.setCancelled(true);
-            MESSAGEUTILS.sendLang(player.getPlayer(), "trade.blacklisted-item");
-            return;
-        }
+        if (denyBlacklisted(event, it) || denyBlacklisted(event, event.getCursor())) return;
 
         // prevent move with number key
         if (event.getCurrentItem() == null && it != null && checkFull(event)) return;
@@ -196,11 +193,7 @@ public class TradeGui extends GuiFrame {
     private void handleClickBottom(InventoryClickEvent event) {
         ItemStack it = getItem(event);
 
-        if (BlacklistUtils.isBlacklisted(it)) {
-            event.setCancelled(true);
-            MESSAGEUTILS.sendLang(player.getPlayer(), "trade.blacklisted-item");
-            return;
-        }
+        if (denyBlacklisted(event, it)) return;
 
         if (event.getCurrentItem() != null) {
             if (checkFull(event)) return;
@@ -232,12 +225,22 @@ public class TradeGui extends GuiFrame {
         Scheduler.get().run(scheduledTask -> trade.update());
         if (ownInv) return;
 
+        if (denyBlacklisted(event, event.getOldCursor())) return;
+
         if (!new HashSet<>(slots).containsAll(event.getInventorySlots())) {
             event.setCancelled(true);
             return;
         }
 
         player.cancel();
+    }
+
+    private boolean denyBlacklisted(Cancellable event, ItemStack item) {
+        if (!BlacklistUtils.isBlacklisted(item)) return false;
+        event.setCancelled(true);
+        MESSAGEUTILS.sendLang(player.getPlayer(), "trade.blacklisted-item");
+        HistoryUtils.writeToHistory("Blocked blacklisted item: %s (%s) tried to trade %s".formatted(player.getPlayer().getName(), player.getPlayer().getUniqueId(), HistoryUtils.describeItem(item)));
+        return true;
     }
 
     private void handleClose(InventoryCloseEvent event) {

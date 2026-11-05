@@ -1,10 +1,10 @@
 package com.artillexstudios.axtrade.utils;
 
-import com.artillexstudios.axapi.items.WrappedItemStack;
 import com.artillexstudios.axapi.libs.boostedyaml.block.implementation.Section;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -14,21 +14,24 @@ public class BlacklistUtils {
 
     public static boolean isBlacklisted(@Nullable ItemStack it) {
         if (it == null || it.getType().isAir()) return false;
-        if (checkLegacy(it)) return true;
         try {
             List<Map<String, Object>> list = CONFIG.getMapList("blacklist-items");
-            if (list == null || list.isEmpty()) return false;
-            for (ItemStack stack : ShulkerUtils.getStorageContents(it, true)) {
-                if (stack == null || stack.getType().isAir()) continue;
-                WrappedItemStack wrap = WrappedItemStack.wrap(stack);
+            for (ItemStack stack : ShulkerUtils.getNestedContents(it)) {
+                if (checkLegacy(stack)) return true;
+                if (list == null) continue;
                 for (Map<String, Object> map : list) {
-                    ItemMatcher matcher = new ItemMatcher(wrap, map);
-                    boolean result = matcher.isMatching();
-                    if (result) return true;
+                    if (new ItemMatcher(stack, map).isMatching()) return true;
                 }
             }
         } catch (Exception ex) {
             ex.printStackTrace();
+        }
+        return false;
+    }
+
+    public static boolean isAnyBlacklisted(Collection<ItemStack> items) {
+        for (ItemStack item : items) {
+            if (isBlacklisted(item)) return true;
         }
         return false;
     }

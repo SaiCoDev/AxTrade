@@ -12,10 +12,31 @@ import java.util.Arrays;
 import java.util.List;
 
 public class ShulkerUtils {
+    private static final int MAX_DEPTH = 8;
 
     public static List<ItemStack> getStorageContents(ItemStack item, boolean includeSelf) {
         if (item.getType().name().endsWith("BUNDLE")) return getBundleContents(item, includeSelf);
         return getShulkerContents(item, includeSelf);
+    }
+
+    /**
+     * The item itself plus everything inside it, including containers within containers
+     * (a bundle holding a shulker box, for example).
+     */
+    @NotNull
+    public static List<ItemStack> getNestedContents(ItemStack item) {
+        List<ItemStack> result = new ArrayList<>();
+        collect(item, result, 0);
+        return result;
+    }
+
+    private static void collect(ItemStack item, List<ItemStack> result, int depth) {
+        if (item == null || item.getType().isAir()) return;
+        result.add(item);
+        if (depth >= MAX_DEPTH) return;
+        for (ItemStack inner : getStorageContents(item, false)) {
+            if (inner != item) collect(inner, result, depth + 1);
+        }
     }
 
     @NotNull

@@ -70,6 +70,11 @@ blacklisted-worlds:
 #  > name
 #  > material / type
 #  > custom-model-data (only the old variant)
+#  > lore (matches if any line matches, colors are ignored)
+#  > pdc (the item's data key, like 'plugin:key')
+#  > pdc-value (optional, the text value stored under pdc)
+#
+# every key in a rule has to match, and items inside shulkers and bundles are checked too
 blacklist-items:
   - custom-model-data: 100
     material: BARRIER
@@ -84,6 +89,14 @@ abort:
   move: true
   interact: true
   command: true
+
+# trades and blocked items are always written to plugins/AxTrade/logs/<date>.log
+logging:
+  # also print them to the console, as the log files don't survive a restart on stateless servers
+  console: true
+  # item data keys to include in the logs, this is the part after the ':' in 'plugin:key'
+  pdc-keys:
+    - "secure_item"
 
 history:
   enabled: true
@@ -117,4 +130,4 @@ update-notifier:
 enable-safety: true
 
 # do not change this
-version: 10
+version: 11

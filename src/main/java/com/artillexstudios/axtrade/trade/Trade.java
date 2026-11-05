@@ -9,6 +9,7 @@ import com.artillexstudios.axtrade.history.HistoryCurrency;
 import com.artillexstudios.axtrade.history.TradeHistoryDatabase;
 import com.artillexstudios.axtrade.history.TradeRecord;
 import com.artillexstudios.axtrade.hooks.currency.CurrencyHook;
+import com.artillexstudios.axtrade.utils.BlacklistUtils;
 import com.artillexstudios.axtrade.utils.HistoryUtils;
 import com.artillexstudios.axtrade.utils.NumberUtils;
 import com.artillexstudios.axtrade.utils.SoundUtils;
@@ -126,6 +127,15 @@ public class Trade {
                 }
             }
 
+            // last line of defence, in case an item got past the checks in the gui
+            for (TradePlayer tradePlayer : List.of(player1, player2)) {
+                if (!BlacklistUtils.isAnyBlacklisted(tradePlayer.getTradeGui().getItems(false))) continue;
+                HistoryUtils.writeToHistory("Blocked blacklisted item at completion: %s (%s)".formatted(tradePlayer.getPlayer().getName(), tradePlayer.getPlayer().getUniqueId()));
+                MESSAGEUTILS.sendLang(tradePlayer.getPlayer(), "trade.blacklisted-item");
+                abort(true);
+                return;
+            }
+
             AxTradeCompleteEvent event = new AxTradeCompleteEvent(this);
             Bukkit.getPluginManager().callEvent(event);
             if (event.isCancelled()) {
@@ -208,8 +218,8 @@ public class Trade {
                         player1HistoryItems.add(itemStack.clone());
                         String itemName = Utils.getFormattedItemName(itemStack);
                         int itemAm = itemStack.getAmount();
+                        player1Items.add(HistoryUtils.describeItem(itemStack));
                         addOrDrop(player2.getPlayer().getInventory(), List.of(itemStack), player2.getPlayer().getLocation());
-                        player1Items.add(itemAm + "x " + itemName);
                         if (CONFIG.getBoolean("enable-trade-summaries")) {
                             MESSAGEUTILS.sendFormatted(player1.getPlayer(), LANG.getString("summary.give.item"), Map.of("%amount%", "" + itemAm, "%item%", itemName));
                             MESSAGEUTILS.sendFormatted(player2.getPlayer(), LANG.getString("summary.get.item"), Map.of("%amount%", "" + itemAm, "%item%", itemName));
@@ -223,8 +233,8 @@ public class Trade {
                         player2HistoryItems.add(itemStack.clone());
                         String itemName = Utils.getFormattedItemName(itemStack);
                         int itemAm = itemStack.getAmount();
+                        player2Items.add(HistoryUtils.describeItem(itemStack));
                         addOrDrop(player1.getPlayer().getInventory(), List.of(itemStack), player1.getPlayer().getLocation());
-                        player2Items.add(itemAm + "x " + itemName);
                         if (CONFIG.getBoolean("enable-trade-summaries")) {
                             MESSAGEUTILS.sendFormatted(player2.getPlayer(), LANG.getString("summary.give.item"), Map.of("%amount%", "" + itemAm, "%item%", itemName));
                             MESSAGEUTILS.sendFormatted(player1.getPlayer(), LANG.getString("summary.get.item"), Map.of("%amount%", "" + itemAm, "%item%", itemName));
@@ -232,11 +242,13 @@ public class Trade {
                     });
 
                     HistoryUtils.writeToHistory(
-                            String.format("%s: [Currencies: %s] [Items: %s] | %s: [Currencies: %s] [Items: %s]",
+                            String.format("%s (%s): [Currencies: %s] [Items: %s] | %s (%s): [Currencies: %s] [Items: %s]",
                                     player1.getPlayer().getName(),
+                                    player1.getPlayer().getUniqueId(),
                                     player1Currencies.isEmpty() ? "---" : String.join(", ", player1Currencies),
                                     player1Items.isEmpty() ? "---" : String.join(", ", player1Items),
                                     player2.getPlayer().getName(),
+                                    player2.getPlayer().getUniqueId(),
                                     player2Currencies.isEmpty() ? "---" : String.join(", ", player2Currencies),
                                     player2Items.isEmpty() ? "---" : String.join(", ", player2Items)
                             )
