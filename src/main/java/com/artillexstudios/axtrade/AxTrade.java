@@ -18,10 +18,8 @@ import com.artillexstudios.axtrade.hooks.HookManager;
 import com.artillexstudios.axtrade.lang.LanguageManager;
 import com.artillexstudios.axtrade.listeners.EntityInteractListener;
 import com.artillexstudios.axtrade.listeners.TradeListeners;
-import com.artillexstudios.axtrade.safety.SafetyManager;
 import com.artillexstudios.axtrade.trade.TradeTicker;
 import com.artillexstudios.axtrade.utils.NumberUtils;
-import com.artillexstudios.axtrade.utils.UpdateNotifier;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 
@@ -87,19 +85,14 @@ public final class AxTrade extends AxPlugin {
         TradeHistoryDatabase.start();
 
         TradeTicker.start();
-        SafetyManager.start();
 
         CommandManager.load();
 
         Bukkit.getConsoleSender().sendMessage(StringUtils.formatToString("&#00FFDD[AxTrade] Loaded plugin!"));
-
-        UpdateNotifier.init(CONFIG, LANG);
-        if (CONFIG.getBoolean("update-notifier.enabled", true)) new UpdateNotifier();
     }
 
     @Override
     public void disable() {
-        SafetyManager.stop();
         TradeHistoryDatabase.stop();
     }
 

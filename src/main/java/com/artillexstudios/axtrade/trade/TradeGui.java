@@ -8,7 +8,6 @@ import com.artillexstudios.axapi.utils.PaperUtils;
 import com.artillexstudios.axapi.utils.StringUtils;
 import com.artillexstudios.axtrade.hooks.HookManager;
 import com.artillexstudios.axtrade.hooks.currency.CurrencyHook;
-import com.artillexstudios.axtrade.safety.SafetyManager;
 import com.artillexstudios.axtrade.utils.BlacklistUtils;
 import com.artillexstudios.axtrade.utils.NumberUtils;
 import com.artillexstudios.axtrade.utils.ShulkerUtils;
@@ -264,10 +263,6 @@ public class TradeGui extends GuiFrame {
 
     private void handleCurrencyClick(String currencyStr, InventoryClickEvent event) {
         event.setCancelled(true);
-        if (!SafetyManager.CURRENCY_SELECTOR.get()) {
-            MESSAGEUTILS.sendLang(player.getPlayer(), "safety");
-            return;
-        }
         player.cancel();
         trade.update();
         inSign = true;
@@ -313,10 +308,6 @@ public class TradeGui extends GuiFrame {
 
     public void handleShulkerClick(InventoryClickEvent event) {
         event.setCancelled(true);
-        if (!SafetyManager.SHULKER_VIEWER.get()) {
-            MESSAGEUTILS.sendLang(player.getPlayer(), "safety");
-            return;
-        }
         player.cancel();
         trade.update();
         inSign = true;
